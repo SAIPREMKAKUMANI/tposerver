@@ -179,7 +179,7 @@ const forgotPassword = (db) => {
         from: "saipremkakumani@gmail.com",
         to: email,
         subject: "Password Reset",
-        text: `Click the following link to reset your password: http://localhost:3000/reset-password/${resetToken}`,
+        text: `Click the following link to reset your password: https://tp-cell-dmoq2fio8-saiprem-kakumanis-projects.vercel.app/reset-password/${resetToken}`,
       };
 
       await transporter.sendMail(mailOptions);
