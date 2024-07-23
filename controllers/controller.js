@@ -34,25 +34,17 @@ const addNotices = (db) => {
 const addCredentials = (db) => {
   return async (req, res) => {
     try {
-      const userId = String(new Date().getTime());
-
-      const user = await db.collection("credentials").findOne({
-        email: req.body.email,
-      });
-
-      if (user) {
-        return res.status(400).send({
-          success: false,
-          message: "User already exists",
-        });
-      }
+      // Create a unique index on the email field
+      await db
+        .collection("credentials")
+        .createIndex({ email: 1 }, { unique: true });
 
       const credentialDocument = {
         name: req.body.name,
         email: req.body.email,
         password: req.body.pass,
         faculty: req.body.faculty,
-        userId: userId, // Increment the maximum userId by 1
+        userId: String(new Date().getTime()),
       };
 
       await db.collection("credentials").insertOne(credentialDocument);
@@ -61,6 +53,13 @@ const addCredentials = (db) => {
         message: "Credentials added successfully",
       });
     } catch (error) {
+      if (error.code === 11000) {
+        // Duplicate key error
+        return res.status(400).send({
+          success: false,
+          message: "User with this email already exists",
+        });
+      }
       console.log(error);
       return res.status(500).send({
         success: false,
